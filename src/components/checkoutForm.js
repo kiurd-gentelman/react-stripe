@@ -1,5 +1,11 @@
 import React from "react";
-import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
+import {
+    CardCvcElement,
+    CardExpiryElement,
+    CardNumberElement,
+    useElements,
+    useStripe
+} from "@stripe/react-stripe-js";
 
 import axios from 'axios'
 
@@ -36,12 +42,12 @@ function CheckoutForm() {
     const pay = async () => {
         try {
             const headers = {
-                'Access-Control-Allow-Origin' : 'http://localhost:8000'
+                'Access-Control-Allow-Origin': 'http://localhost:8000'
             };
-            axios.post('http://localhost:8000/payment-intent' ,headers).then(async response => {
+            axios.post('http://localhost:8000/payment-intent', headers).then(async response => {
                 console.log(response)
                 // const data = await response.json();
-                const cardElement = elements.getElement(CardElement);
+                const cardElement = elements.getElement(CardNumberElement);
                 const confirmPayment = await stripe.confirmCardPayment(
                     response.data.client_secret,
                     {payment_method: {card: cardElement}}
@@ -59,12 +65,34 @@ function CheckoutForm() {
 
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <CardElement options={CARD_ELEMENT_OPTIONS} />
-                <button className="btn-pay" onClick={pay}>Buy Now</button>
-            </form>
+        <div className="container">
+            <h1> Payment with stripe</h1>
+
+                <div className="d-flex justify-content-center">
+                    <div className="w-25">
+                    <form onSubmit={handleSubmit}>
+                        {/*<CardElement options={CARD_ELEMENT_OPTIONS} />*/}
+
+                        <div className="form-group">
+                            <label>Card number</label>
+                            <CardNumberElement className="form-control"/>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Card Expire date</label>
+                            <CardExpiryElement className="form-control"/>
+                        </div>
+                        <div>
+                            <label>CVC Number</label>
+                            <CardCvcElement className="form-control"/>
+                        </div>
+
+                        <button className="btn btn-success mt-2" onClick={pay}>Buy Now</button>
+                    </form>
+                </div>
+            </div>
         </div>
+
     );
 
 }
